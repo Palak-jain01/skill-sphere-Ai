@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "SkillSphere AI"
+description = "An AI-powered career navigation dashboard that helps learners track skills and credentials, identify gaps, follow personalized roadmaps, and discover opportunities."
+version = "1.0.0"
+id = "artifacts/skillsphere-ai"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 21251
+
+[services.development]
+run = "pnpm --filter @workspace/skillsphere-ai run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/skillsphere-ai", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/skillsphere-ai/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "21251"
+BASE_PATH = "/"
