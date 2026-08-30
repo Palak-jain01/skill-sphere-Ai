@@ -1,0 +1,1 @@
+- [API codegen compatibility](api-codegen-compatibility.md) — verify generated Zod APIs against the workspace's pinned Zod major version after OpenAPI changes.
