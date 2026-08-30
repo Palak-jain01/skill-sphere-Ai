@@ -1,0 +1,379 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: SkillSphere AI learner career navigation API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: dashboard
+    description: Learner dashboard summaries
+  - name: profile
+    description: Learner profile
+  - name: skills
+    description: Learner skills
+  - name: certificates
+    description: Learner certificates
+  - name: roadmap
+    description: Personalized career roadmap
+  - name: opportunities
+    description: Career opportunities
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /dashboard:
+    get:
+      operationId: getDashboard
+      tags: [dashboard]
+      summary: Get learner dashboard
+      responses:
+        "200":
+          description: Dashboard summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Dashboard"
+  /profile:
+    get:
+      operationId: getProfile
+      tags: [profile]
+      summary: Get learner profile
+      responses:
+        "200":
+          description: Learner profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+    patch:
+      operationId: updateProfile
+      tags: [profile]
+      summary: Update learner profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileUpdate"
+      responses:
+        "200":
+          description: Updated profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+  /skills:
+    get:
+      operationId: getSkills
+      tags: [skills]
+      summary: List learner skills
+      responses:
+        "200":
+          description: Learner skills
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Skill"
+    post:
+      operationId: createSkill
+      tags: [skills]
+      summary: Add a learner skill
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SkillInput"
+      responses:
+        "201":
+          description: Created skill
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Skill"
+  /skills/{id}:
+    patch:
+      operationId: updateSkill
+      tags: [skills]
+      summary: Update a learner skill
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SkillUpdate"
+      responses:
+        "200":
+          description: Updated skill
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Skill"
+    delete:
+      operationId: deleteSkill
+      tags: [skills]
+      summary: Delete a learner skill
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "204":
+          description: Skill deleted
+  /certificates:
+    get:
+      operationId: getCertificates
+      tags: [certificates]
+      summary: List learner certificates
+      responses:
+        "200":
+          description: Learner certificates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Certificate"
+    post:
+      operationId: createCertificate
+      tags: [certificates]
+      summary: Add a certificate
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CertificateInput"
+      responses:
+        "201":
+          description: Created certificate
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Certificate"
+  /certificates/{id}:
+    delete:
+      operationId: deleteCertificate
+      tags: [certificates]
+      summary: Delete a certificate
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      responses:
+        "204":
+          description: Certificate deleted
+  /roadmap:
+    get:
+      operationId: getRoadmap
+      tags: [roadmap]
+      summary: Get personalized roadmap
+      responses:
+        "200":
+          description: Roadmap milestones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RoadmapItem"
+  /roadmap/{id}:
+    patch:
+      operationId: updateRoadmapItem
+      tags: [roadmap]
+      summary: Update roadmap milestone status
+      parameters:
+        - $ref: "#/components/parameters/Id"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoadmapUpdate"
+      responses:
+        "200":
+          description: Updated roadmap milestone
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RoadmapItem"
+  /opportunities:
+    get:
+      operationId: getOpportunities
+      tags: [opportunities]
+      summary: Discover relevant opportunities
+      parameters:
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Relevant opportunities
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Opportunity"
+components:
+  parameters:
+    Id:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: number
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    Profile:
+      type: object
+      required: [id, name, email, headline, location, goal, avatarInitials]
+      properties:
+        id: { type: number }
+        name: { type: string }
+        email: { type: string }
+        headline: { type: string }
+        location: { type: string }
+        goal: { type: string }
+        avatarInitials: { type: string }
+    ProfileUpdate:
+      type: object
+      properties:
+        name: { type: string, minLength: 1 }
+        headline: { type: string }
+        location: { type: string }
+        goal: { type: string }
+    Skill:
+      type: object
+      required: [id, name, category, level, progress, verified]
+      properties:
+        id: { type: number }
+        name: { type: string }
+        category: { type: string }
+        level: { type: string }
+        progress: { type: number, minimum: 0, maximum: 100 }
+        verified: { type: boolean }
+    SkillInput:
+      type: object
+      required: [name, category, level]
+      properties:
+        name: { type: string, minLength: 1 }
+        category: { type: string, minLength: 1 }
+        level: { type: string, minLength: 1 }
+        progress: { type: number, minimum: 0, maximum: 100 }
+        verified: { type: boolean }
+    SkillUpdate:
+      type: object
+      properties:
+        name: { type: string, minLength: 1 }
+        category: { type: string }
+        level: { type: string }
+        progress: { type: number, minimum: 0, maximum: 100 }
+        verified: { type: boolean }
+    Certificate:
+      type: object
+      required: [id, name, issuer, issuedDate, credentialId, status]
+      properties:
+        id: { type: number }
+        name: { type: string }
+        issuer: { type: string }
+        issuedDate: { type: string }
+        credentialId: { type: string }
+        status: { type: string }
+    CertificateInput:
+      type: object
+      required: [name, issuer, issuedDate, credentialId]
+      properties:
+        name: { type: string, minLength: 1 }
+        issuer: { type: string, minLength: 1 }
+        issuedDate: { type: string, minLength: 1 }
+        credentialId: { type: string, minLength: 1 }
+    RoadmapItem:
+      type: object
+      required: [id, phase, title, description, status, duration, skills]
+      properties:
+        id: { type: number }
+        phase: { type: string }
+        title: { type: string }
+        description: { type: string }
+        status: { type: string }
+        duration: { type: string }
+        skills:
+          type: array
+          items: { type: string }
+    RoadmapUpdate:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string }
+    Opportunity:
+      type: object
+      required: [id, title, company, type, location, match, posted, tags, description]
+      properties:
+        id: { type: number }
+        title: { type: string }
+        company: { type: string }
+        type: { type: string }
+        location: { type: string }
+        match: { type: number, minimum: 0, maximum: 100 }
+        posted: { type: string }
+        tags:
+          type: array
+          items: { type: string }
+        description: { type: string }
+    Activity:
+      type: object
+      required: [id, title, description, time, kind]
+      properties:
+        id: { type: number }
+        title: { type: string }
+        description: { type: string }
+        time: { type: string }
+        kind: { type: string }
+    Dashboard:
+      type: object
+      required: [profile, skillCount, verifiedSkillCount, certificateCount, roadmapProgress, targetRole, skillGap, activities]
+      properties:
+        profile:
+          $ref: "#/components/schemas/Profile"
+        skillCount: { type: number }
+        verifiedSkillCount: { type: number }
+        certificateCount: { type: number }
+        roadmapProgress: { type: number, minimum: 0, maximum: 100 }
+        targetRole: { type: string }
+        skillGap:
+          type: array
+          items: { type: string }
+        activities:
+          type: array
+          items:
+            $ref: "#/components/schemas/Activity"
+
